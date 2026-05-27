@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RiceShield — Sistem Pengusir Hama Padi Cerdas</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   RESET & VARIABLES — TEMA PERSAWAHAN
+═══════════════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Warna utama tema persawahan */
+  --bg:        #0B1A0E;
+  --bg2:       #0F2214;
+  --bg3:       #132917;
+  --bg4:       #1A3520;
+  --border:    #1E3D24;
+  --border2:   #2A5232;
+  --border3:   #336040;
+
+  /* Teks */
+  --text:      #E8F5E9;
+  --text2:     #A5C8A8;
+  --text3:     #5A8060;
+
+  /* Aksen */
+  --green:     #4CAF50;
+  --green2:    #66BB6A;
+  --green3:    #81C784;
+  --lime:      #8BC34A;
+  --teal:      #26A69A;
+  --amber:     #FFA726;
+  --orange:    #FF7043;
+  --red:       #EF5350;
+  --blue:      #42A5F5;
+  --purple:    #AB47BC;
+  --yellow:    #FFEE58;
+
+  /* Radius & shadow */
+  --r:   12px;
+  --r2:  8px;
+  --r3:  20px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --glow-green: 0 0 20px rgba(76,175,80,0.15);
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE SYSTEM
+═══════════════════════════════════════════════════════════ */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+#page-app.active{display:flex}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGIN PAGE — tema sawah
+═══════════════════════════════════════════════════════════ */
+#page-login{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;position:relative;overflow:hidden;
+  background:radial-gradient(ellipse 100% 80% at 50% 0%,
+    rgba(76,175,80,0.18) 0%,transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 100%,
+    rgba(38,166,154,0.1) 0%,transparent 50%),
+    var(--bg);
+}
+.login-deco{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.login-deco::before{
+  content:'';position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  border:1px solid rgba(76,175,80,0.08);
+  top:-200px;left:-200px;
+}
+.login-deco::after{
+  content:'';position:absolute;
+  width:400px;height:400px;border-radius:50%;
+  border:1px solid rgba(38,166,154,0.06);
+  bottom:-150px;right:-100px;
+}
+.login-wrap{
+  position:relative;z-index:1;
+  width:100%;max-width:440px;margin:24px;
+}
+.login-card{
+  background:rgba(15,34,20,0.95);
+  border:1px solid var(--border2);
+  border-radius:24px;
+  padding:48px 40px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6),
+             0 0 0 1px rgba(76,175,80,0.05),
+             inset 0 1px 0 rgba(255,255,255,0.03);
+  backdrop-filter:blur(20px);
+}
+.login-logo{text-align:center;margin-bottom:36px}
+.logo-icon{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:64px;height:64px;border-radius:18px;
+  background:linear-gradient(135deg,#2E7D32,#1B5E20);
+  font-size:30px;margin-bottom:14px;
+  box-shadow:0 8px 32px rgba(46,125,50,0.4),
+             inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.login-logo h1{
+  font-size:24px;font-weight:800;
+  background:linear-gradient(135deg,var(--green3),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-0.5px;
+}
+.login-logo p{font-size:13px;color:var(--text3);margin-top:5px;line-height:1.5}
+
+/* Tab switcher */
+.tab-sw{
+  display:flex;background:var(--bg3);border-radius:10px;
+  padding:4px;margin-bottom:28px;border:1px solid var(--border);
+}
+.tab-btn{
+  flex:1;padding:9px 12px;border:none;background:transparent;
+  color:var(--text3);font-family:inherit;font-size:13px;
+  font-weight:600;border-radius:7px;cursor:pointer;transition:.2s;
+}
+.tab-btn.active{
+  background:var(--border2);color:var(--green3);
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Form */
+.fg{margin-bottom:18px}
+.fl{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--text3);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:7px;
+}
+.fi-wrap{position:relative}
+.fi{
+  width:100%;padding:12px 14px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r2);color:var(--text);
+  font-family:inherit;font-size:14px;outline:none;transition:.2s;
+}
+.fi:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(76,175,80,0.12)}
+.fi::placeholder{color:var(--text3)}
+/* Password toggle — selalu terlihat, warna soft */
+.fi-pass{padding-right:44px}
+.eye-btn{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:#5A8060;font-size:16px;padding:4px;transition:color .2s;
+  display:flex;align-items:center;
+}
+.eye-btn:hover{color:var(--green3)}
+
+.login-err{
+  background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.25);
+  border-radius:var(--r2);padding:10px 14px;
+  font-size:13px;color:#EF9A9A;margin-bottom:16px;display:none;
+}
+.btn-prim{
+  width:100%;padding:13px;border:none;border-radius:var(--r2);
+  cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;
+  background:linear-gradient(135deg,#2E7D32,#388E3C);
+  color:#fff;letter-spacing:.3px;transition:.2s;margin-top:4px;
+  box-shadow:0 4px 16px rgba(46,125,50,0.35);
+}
+.btn-prim:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 24px rgba(46,125,50,0.45);
+}
+.form-tab{display:none}
+.form-tab.active{display:block}
+
+/* ═══════════════════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════════════════ */
+#page-app{flex-direction:row}
+
+/* SIDEBAR */
+.sidebar{
+  width:250px;min-height:100vh;background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sb-logo{
+  padding:22px 18px 16px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);
+}
+.sb-logo-icon{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,#2E7D32,#1B5E20);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.sb-logo span{font-size:16px;font-weight:800;
+  background:linear-gradient(135deg,var(--green3),var(--teal));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+.sb-nav{flex:1;padding:10px 10px;overflow-y:auto}
+.sb-section{
+  font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:1.2px;
+  padding:14px 10px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;padding:10px 12px;
+  border-radius:var(--r2);cursor:pointer;transition:.15s;
+  font-size:13px;font-weight:500;color:var(--text2);
+  margin-bottom:1px;border:none;background:transparent;
+  width:100%;text-align:left;
+}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{
+  background:rgba(76,175,80,0.12);color:var(--green3);
+  font-weight:600;
+  box-shadow:inset 3px 0 0 var(--green);
+}
+.ni-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+
+.sb-user{
+  padding:14px 16px;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.uavatar{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+}
+.av-super{background:linear-gradient(135deg,#F9A825,#E65100);color:#000}
+.av-admin{background:linear-gradient(135deg,#2E7D32,#1B5E20);color:#fff}
+.av-user {background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff}
+.uinfo{flex:1;min-width:0}
+.uname{font-size:13px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.urole{font-size:10px;color:var(--text3)}
+.btn-logout{
+  padding:6px;border:none;background:transparent;
+  color:var(--text3);cursor:pointer;border-radius:6px;transition:.15s;
+}
+.btn-logout:hover{color:var(--red);background:rgba(239,83,80,0.1)}
+
+/* MAIN */
+.main{flex:1;min-height:100vh;overflow-x:hidden}
+.main-hdr{
+  padding:18px 28px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(15,34,20,0.95);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:10;
+}
+.main-hdr h2{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.content{padding:24px}
+
+/* ═══════════════════════════════════════════════════════════
+   VIEWS
+═══════════════════════════════════════════════════════════ */
+.view{display:none}
+.view.active{display:block}
+
+/* ═══════════════════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════════════════ */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:14px;margin-bottom:24px;
+}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px;
+}
+.stat-label{font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.stat-val{font-size:26px;font-weight:800;letter-spacing:-1px}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ═══════════════════════════════════════════════════════════
+   DEVICE GRID
+═══════════════════════════════════════════════════════════ */
+.device-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+  gap:18px;
+}
+.d-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;cursor:pointer;
+  transition:.2s;
+}
+.d-card:hover{border-color:var(--border2);transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.4)}
+.d-card-hdr{
+  padding:16px 18px 12px;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.d-id{font-family:'JetBrains Mono',monospace;font-size:15px;
+  font-weight:600;color:var(--green3)}
+.d-body{padding:14px 18px}
+.d-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid rgba(30,61,36,0.5);font-size:13px;
+}
+.d-row:last-child{border-bottom:none}
+.d-lb{color:var(--text2)}
+.d-vl{font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12px}
+.d-foot{
+  padding:10px 18px;background:rgba(0,0,0,0.15);
+  display:flex;justify-content:space-between;align-items:center;
+}
+/* card outer — alat yang tidak bisa diakses penuh */
+.d-card-outer{opacity:0.7;cursor:default}
+.d-card-outer:hover{transform:none;box-shadow:none;border-color:var(--border)}
+
+/* ═══════════════════════════════════════════════════════════
+   BADGE
+═══════════════════════════════════════════════════════════ */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:600;letter-spacing:.3px;
+}
+.b-BURUNG{background:rgba(255,167,38,0.15);color:var(--amber);
+  border:1px solid rgba(255,167,38,0.25)}
+.b-TIKUS {background:rgba(171,71,188,0.15);color:var(--purple);
+  border:1px solid rgba(171,71,188,0.25)}
+.b-IDLE  {background:rgba(90,128,96,0.15);color:var(--text3);
+  border:1px solid var(--border)}
+.b-online{background:rgba(76,175,80,0.15);color:var(--green3);
+  border:1px solid rgba(76,175,80,0.25)}
+.b-offline{background:rgba(239,83,80,0.12);color:var(--red);
+  border:1px solid rgba(239,83,80,0.25)}
+.b-super{background:rgba(249,168,37,0.15);color:#F9A825;
+  border:1px solid rgba(249,168,37,0.3)}
+.b-admin{background:rgba(76,175,80,0.15);color:var(--green3);
+  border:1px solid rgba(76,175,80,0.3)}
+.b-user {background:rgba(66,165,245,0.15);color:var(--blue);
+  border:1px solid rgba(66,165,245,0.3)}
+.b-pending{background:rgba(255,167,38,0.12);color:var(--amber);
+  border:1px solid rgba(255,167,38,0.25)}
+.b-lock{background:rgba(90,128,96,0.12);color:var(--text3);
+  border:1px solid var(--border)}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-g{background:var(--green);box-shadow:0 0 5px var(--green)}
+.dot-r{background:var(--red)}
+.dot-y{background:var(--amber)}
+
+/* ═══════════════════════════════════════════════════════════
+   TABEL
+═══════════════════════════════════════════════════════════ */
+.tw{background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.tw-hdr{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tw-hdr h3{font-size:14px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{
+  padding:10px 14px;font-size:10px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.8px;text-align:left;
+  background:rgba(0,0,0,0.2);border-bottom:1px solid var(--border);
+}
+td{padding:11px 14px;font-size:13px;border-bottom:1px solid rgba(30,61,36,0.4)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.015)}
+.td-mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.td-g{color:var(--green3)}
+.td-y{color:var(--amber)}
+.td-r{color:var(--red)}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════════ */
+.btn{
+  padding:8px 14px;border:none;border-radius:var(--r2);cursor:pointer;
+  font-family:inherit;font-size:12px;font-weight:600;transition:.15s;
+  display:inline-flex;align-items:center;gap:5px;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-g {background:linear-gradient(135deg,#2E7D32,#388E3C);color:#fff;
+  box-shadow:0 2px 8px rgba(46,125,50,0.3)}
+.btn-r {background:rgba(239,83,80,0.12);color:var(--red);
+  border:1px solid rgba(239,83,80,0.25)}
+.btn-r:hover{background:rgba(239,83,80,0.2)}
+.btn-b {background:rgba(66,165,245,0.12);color:var(--blue);
+  border:1px solid rgba(66,165,245,0.25)}
+.btn-y {background:rgba(255,167,38,0.12);color:var(--amber);
+  border:1px solid rgba(255,167,38,0.25)}
+.btn-ghost{background:var(--bg3);color:var(--text2);
+  border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════════════ */
+.mo{
+  position:fixed;inset:0;background:rgba(0,0,0,0.75);
+  backdrop-filter:blur(6px);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.mo.open{display:flex}
+.mc{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:20px;padding:30px;width:100%;max-width:480px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.7);
+  animation:mIn .2s ease;
+}
+@keyframes mIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:none}}
+.mc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.mc-hdr h3{font-size:16px;font-weight:700}
+.mc-x{
+  background:none;border:none;color:var(--text2);
+  cursor:pointer;font-size:18px;padding:4px;
+  border-radius:6px;transition:.15s;line-height:1;
+}
+.mc-x:hover{color:var(--text);background:var(--bg3)}
+.mc-ft{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+
+/* ═══════════════════════════════════════════════════════════
+   DETAIL ALAT
+═══════════════════════════════════════════════════════════ */
+.det-hdr{display:flex;align-items:center;gap:14px;margin-bottom:24px;flex-wrap:wrap}
+.det-back{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r2);padding:8px 14px;cursor:pointer;
+  font-size:13px;font-weight:600;color:var(--text2);
+  transition:.15s;display:flex;align-items:center;gap:5px;
+}
+.det-back:hover{color:var(--text);border-color:var(--border2)}
+.det-id{font-family:'JetBrains Mono',monospace;
+  font-size:22px;font-weight:700;color:var(--green3)}
+
+.mon-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:12px;margin-bottom:20px;
+}
+.mon-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;text-align:center;
+}
+.mc-ico{font-size:22px;margin-bottom:6px}
+.mc-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.8px;font-weight:700;margin-bottom:5px}
+.mc-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.mc-unit{font-size:11px;color:var(--text2);margin-left:2px}
+.pir-active{border-color:var(--green);box-shadow:var(--glow-green)}
+.pir-det{color:var(--amber)}
+.pir-aman{color:var(--text3)}
+
+/* ═══════════════════════════════════════════════════════════
+   TABEL DETEKSI (Burung & Tikus)
+═══════════════════════════════════════════════════════════ */
+.det-log-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════ */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:12px;padding:12px 18px;font-size:13px;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  transform:translateY(80px);opacity:0;
+  transition:.3s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;max-width:320px;
+}
+.toast.show{transform:none;opacity:1}
+
+/* ═══════════════════════════════════════════════════════════
+   KONEKSI STATUS
+═══════════════════════════════════════════════════════════ */
+.conn-banner{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;border-radius:var(--r2);
+  font-size:12px;font-weight:500;margin-bottom:20px;
+}
+.conn-ok  {background:rgba(76,175,80,0.1); border:1px solid rgba(76,175,80,0.2); color:var(--green3)}
+.conn-err {background:rgba(239,83,80,0.1); border:1px solid rgba(239,83,80,0.2); color:var(--red)}
+.conn-warn{background:rgba(255,167,38,0.1);border:1px solid rgba(255,167,38,0.2);color:var(--amber)}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════ */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .content{padding:14px}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .device-grid{grid-template-columns:1fr}
+  .mon-grid{grid-template-columns:repeat(2,1fr)}
+  .login-card{padding:36px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+  PAGE: LOGIN
+═══════════════════════════════════════════ -->
+<div id="page-login" class="page active">
+  <div class="login-deco"></div>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-icon">🌾</div>
+        <h1>RiceShield</h1>
+        <p>Sistem Pengusir Hama Padi Cerdas<br>Berbasis Energi Mandiri</p>
+      </div>
+      <div class="tab-sw">
+        <button class="tab-btn active" onclick="switchTab('login')">Masuk</button>
+        <button class="tab-btn"        onclick="switchTab('register')">Daftar</button>
+      </div>
+      <div id="lerr" class="login-err"></div>
+
+      <!-- Login -->
+      <div id="ftab-login" class="form-tab active">
+        <div class="fg">
+          <label class="fl">Email</label>
+          <input type="email" id="l-email" class="fi" placeholder="email@contoh.com">
+        </div>
+        <div class="fg">
+          <label class="fl">Password</label>
+          <div class="fi-wrap">
+            <input type="password" id="l-pass" class="fi fi-pass" placeholder="••••••••">
+            <button type="button" class="eye-btn" onclick="toggleEye('l-pass',this)">👁</button>
+          </div>
+        </div>
+        <button class="btn-prim" onclick="doLogin()">Masuk</button>
+      </div>
+
+      <!-- Register -->
+      <div id="ftab-register" class="form-tab">
+        <div class="fg">
+          <label class="fl">Nama Lengkap</label>
+          <input type="text" id="r-name" class="fi" placeholder="Nama lengkap">
+        </div>
+        <div class="fg">
+          <label class="fl">Email</label>
+          <input type="email" id="r-email" class="fi" placeholder="email@contoh.com">
+        </div>
+        <div class="fg">
+          <label class="fl">Password</label>
+          <div class="fi-wrap">
+            <input type="password" id="r-pass" class="fi fi-pass" placeholder="Min. 8 karakter">
+            <button type="button" class="eye-btn" onclick="toggleEye('r-pass',this)">👁</button>
+          </div>
+        </div>
+        <button class="btn-prim" onclick="doRegister()">Buat Akun</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  PAGE: APP
+═══════════════════════════════════════════ -->
+<div id="page-app" class="page">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">🌾</div>
+      <span>RiceShield</span>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Monitoring</div>
+      <button class="nav-item active" id="nav-dashboard" onclick="goView('dashboard')">
+        <span class="ni-icon">📊</span> Dashboard
+      </button>
+
+      <div class="sb-section">Manajemen</div>
+      <button class="nav-item" id="nav-devices" onclick="goView('devices')">
+        <span class="ni-icon">🔧</span> Kelola Alat SPHC
+      </button>
+      <button class="nav-item" id="nav-users" onclick="goView('users')">
+        <span class="ni-icon">👥</span> Kelola Akses
+      </button>
+
+      <div class="sb-section" id="sa-section" style="display:none">Super Admin</div>
+      <button class="nav-item" id="nav-allacounts" onclick="goView('allaccounts')" style="display:none">
+        <span class="ni-icon">🛡</span> Semua Akun
+      </button>
+
+      <div class="sb-section">Koneksi</div>
+      <button class="nav-item" id="nav-gateway" onclick="goView('gateway')">
+        <span class="ni-icon">📡</span> Status Gateway
+      </button>
+    </nav>
+    <div class="sb-user">
+      <div id="sb-av" class="uavatar av-user">U</div>
+      <div class="uinfo">
+        <div id="sb-name" class="uname">—</div>
+        <div id="sb-role" class="urole">—</div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()" title="Keluar">⏏</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-hdr">
+      <h2 id="main-title">Dashboard</h2>
+      <div id="conn-status-mini" style="font-size:12px;color:var(--text3)"></div>
+    </div>
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div id="view-dashboard" class="view active">
+        <div id="conn-banner"></div>
+        <div class="stat-grid" id="stat-grid"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <h3 style="font-size:14px;font-weight:600;color:var(--text2)">Alat SPHC Terdaftar</h3>
+          <span id="last-refresh" style="font-size:11px;color:var(--text3)"></span>
+        </div>
+        <div class="device-grid" id="device-grid"></div>
+      </div>
+
+      <!-- ── DETAIL ALAT ── -->
+      <div id="view-detail" class="view">
+        <div class="det-hdr">
+          <button class="det-back" onclick="goView('dashboard')">← Kembali</button>
+          <div>
+            <div id="det-id" class="det-id">—</div>
+            <div id="det-sub" style="font-size:12px;color:var(--text3);margin-top:3px"></div>
+          </div>
+          <div id="det-badge" style="margin-left:auto"></div>
+        </div>
+
+        <!-- Monitor cards -->
+        <div class="mon-grid" id="mon-grid"></div>
+
+        <!-- Tabel deteksi burung (PIR) -->
+        <div class="det-log-grid">
+          <div class="tw">
+            <div class="tw-hdr">
+              <h3>🐦 Deteksi Burung — PIR</h3>
+              <span id="det-mode-badge"></span>
+            </div>
+            <table>
+              <thead>
+                <tr><th>Parameter</th><th>Nilai</th><th>Status</th></tr>
+              </thead>
+              <tbody id="tbl-burung"></tbody>
+            </table>
+          </div>
+
+          <!-- Tabel deteksi tikus (jadwal) -->
+          <div class="tw">
+            <div class="tw-hdr">
+              <h3>🐀 Deteksi Tikus — Jadwal</h3>
+            </div>
+            <table>
+              <thead>
+                <tr><th>Parameter</th><th>Nilai</th><th>Info</th></tr>
+              </thead>
+              <tbody id="tbl-tikus"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Info koneksi -->
+        <div class="tw">
+          <div class="tw-hdr">
+            <h3>📡 Data Sensor & Koneksi</h3>
+            <span id="det-update" style="font-size:11px;color:var(--text3)"></span>
+          </div>
+          <table><tbody id="tbl-info"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ── KELOLA ALAT ── -->
+      <div id="view-devices" class="view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <div>
+            <h3 style="font-size:15px;font-weight:700">Kelola Alat SPHC</h3>
+            <p style="font-size:12px;color:var(--text3);margin-top:3px">Daftarkan ID PEL alat baru</p>
+          </div>
+          <button class="btn btn-g" onclick="openMo('mo-dev')">＋ Daftarkan Alat</button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr><th>ID Alat</th><th>Nama</th><th>Pemilik</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="dev-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── KELOLA AKSES ── -->
+      <div id="view-users" class="view">
+        <div style="margin-bottom:18px">
+          <h3 style="font-size:15px;font-weight:700">Kelola Akses Pengguna</h3>
+          <p style="font-size:12px;color:var(--text3);margin-top:3px">Izinkan pengguna mengakses alat SPHC</p>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr><th>Nama</th><th>Email</th><th>Role</th><th>Alat Diizinkan</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="usr-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── SEMUA AKUN (SA) ── -->
+      <div id="view-allaccounts" class="view">
+        <div style="margin-bottom:18px">
+          <h3 style="font-size:15px;font-weight:700">Semua Akun Terdaftar</h3>
+          <p style="font-size:12px;color:var(--text3);margin-top:3px">Hanya Super Admin yang dapat melihat halaman ini</p>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr><th>Nama</th><th>Email</th><th>Role</th><th>Bergabung</th><th>Alat Dimiliki</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="sa-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── STATUS GATEWAY ── -->
+      <div id="view-gateway" class="view">
+        <div style="margin-bottom:18px">
+          <h3 style="font-size:15px;font-weight:700">Status Gateway ESP32</h3>
+          <p style="font-size:12px;color:var(--text3);margin-top:3px">Koneksi langsung ke gateway via IP lokal</p>
+        </div>
+        <div class="tw" style="margin-bottom:16px">
+          <div class="tw-hdr"><h3>⚙️ Konfigurasi Koneksi Gateway</h3></div>
+          <div style="padding:16px">
+            <div class="fg">
+              <label class="fl">IP Address Gateway ESP32</label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="gw-ip" class="fi" placeholder="contoh: 192.168.1.100"
+                  style="font-family:'JetBrains Mono',monospace">
+                <button class="btn btn-g" onclick="simpanGwIp()">Simpan</button>
+              </div>
+              <div style="font-size:11px;color:var(--text3);margin-top:6px">
+                IP dilihat dari Serial Monitor Arduino IDE saat gateway pertama kali menyala
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="gw-status-card" class="tw">
+          <div class="tw-hdr"><h3>📊 Status Gateway</h3>
+            <button class="btn btn-ghost btn-sm" onclick="fetchGateway()">🔄 Refresh</button>
+          </div>
+          <div id="gw-status-body" style="padding:16px;font-size:13px;color:var(--text3)">
+            Klik Refresh untuk cek koneksi gateway...
+          </div>
+        </div>
+        <div id="gw-nodes-card" class="tw" style="display:none">
+          <div class="tw-hdr"><h3>📡 Data Node dari Gateway</h3></div>
+          <table>
+            <thead><tr><th>ID</th><th>Mode</th><th>PIR1</th><th>PIR2</th><th>Panel</th><th>Baterai</th><th>Paket</th><th>Status</th></tr></thead>
+            <tbody id="gw-nodes-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /page-app -->
+
+<!-- ═══════════════════════════════════════════
+  MODALS
+═══════════════════════════════════════════ -->
+
+<!-- Modal: Tambah/Edit Alat -->
+<div id="mo-dev" class="mo">
+  <div class="mc">
+    <div class="mc-hdr">
+      <h3 id="mo-dev-title">Daftarkan Alat SPHC</h3>
+      <button class="mc-x" onclick="closeMo('mo-dev')">✕</button>
+    </div>
+    <div class="fg">
+      <label class="fl">ID Alat (contoh: PEL-001)</label>
+      <input type="text" id="d-id" class="fi" placeholder="PEL-001"
+        style="font-family:'JetBrains Mono',monospace">
+    </div>
+    <div class="fg">
+      <label class="fl">Nama Alat</label>
+      <input type="text" id="d-name" class="fi" placeholder="Alat Sawah Blok A">
+    </div>
+    <div style="background:rgba(76,175,80,0.06);border:1px solid rgba(76,175,80,0.15);
+      border-radius:var(--r2);padding:12px 14px;font-size:12px;color:var(--text3);
+      margin-top:4px;line-height:1.6">
+      💡 Token ThingsBoard diatur langsung di Gateway ESP32 melalui halaman
+      <strong style="color:var(--green3)">http://&lt;IP_GATEWAY&gt;/config</strong>
+      — tidak perlu diisi di sini.
+    </div>
+    <div class="mc-ft">
+      <button class="btn btn-ghost" onclick="closeMo('mo-dev')">Batal</button>
+      <button class="btn btn-g" onclick="saveDev()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Izinkan akses -->
+<div id="mo-grant" class="mo">
+  <div class="mc">
+    <div class="mc-hdr">
+      <h3>Izinkan Akses Alat</h3>
+      <button class="mc-x" onclick="closeMo('mo-grant')">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px">
+      Pilih alat yang dapat diakses oleh <strong id="grant-name"></strong>
+    </p>
+    <div id="grant-list" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto"></div>
+    <div class="mc-ft">
+      <button class="btn btn-ghost" onclick="closeMo('mo-grant')">Batal</button>
+      <button class="btn btn-g" onclick="saveGrant()">💾 Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Konfirmasi hapus -->
+<div id="mo-confirm" class="mo">
+  <div class="mc" style="max-width:360px">
+    <div class="mc-hdr">
+      <h3>Konfirmasi Hapus</h3>
+      <button class="mc-x" onclick="closeMo('mo-confirm')">✕</button>
+    </div>
+    <p id="confirm-msg" style="font-size:13px;color:var(--text2);line-height:1.6"></p>
+    <div class="mc-ft">
+      <button class="btn btn-ghost" onclick="closeMo('mo-confirm')">Batal</button>
+      <button class="btn btn-r" id="confirm-ok">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast">
+  <span id="t-ico"></span>
+  <span id="t-msg"></span>
+</div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════
+//  KONFIGURASI GATEWAY
+//  Website mengambil data LANGSUNG dari Gateway ESP32
+//  via endpoint GET http://<GATEWAY_IP>/data
+//  Tidak perlu backend, tidak perlu database terpisah
+// ═══════════════════════════════════════════════════════════
+let GATEWAY_IP  = localStorage.getItem('gw_ip') || '';
+let gwData      = {};   // cache data dari gateway { nodeId: {...} }
+let gwOnline    = false;
+let lastFetchTs = 0;
+
+// ThingsBoard host (untuk link referensi saja)
+const TB_HOST = 'https://thingsboard.cloud';
+
+// ═══════════════════════════════════════════════════════════
+//  STORAGE HELPERS
+// ═══════════════════════════════════════════════════════════
+function ls(k,v){
+  if(v===undefined){try{return JSON.parse(localStorage.getItem(k))}catch{return null}}
+  localStorage.setItem(k, typeof v==='string'?v:JSON.stringify(v));
+}
+function getAcc()  { return ls('rs_acc')  || []; }
+function savAcc(a) { ls('rs_acc', a); }
+function getDev()  { return ls('rs_dev')  || []; }
+function savDev(d) { ls('rs_dev', d); }
+function getSes()  { return ls('rs_ses'); }
+function setSes(u) { ls('rs_ses', u); }
+
+function initStorage() {
+  if (!ls('rs_acc')) {
+    savAcc([{
+      id:'superadmin',name:'Super Admin',
+      email:'superadmin@gmail.com',password:'Super@12345',
+      role:'superadmin',
+      joinDate: new Date().toISOString().split('T')[0],
+      allowedDevices:[]
+    }]);
+  }
+  if (!ls('rs_dev')) savDev([]);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH
+// ═══════════════════════════════════════════════════════════
+let cu = null; // current user
+
+function switchTab(t) {
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===(t==='login'?0:1)));
+  document.getElementById('ftab-login').classList.toggle('active',t==='login');
+  document.getElementById('ftab-register').classList.toggle('active',t==='register');
+  hideLerr();
+}
+
+function showLerr(m) {
+  const el=document.getElementById('lerr');
+  el.textContent=m; el.style.display='block';
+}
+function hideLerr() { document.getElementById('lerr').style.display='none'; }
+
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    inp.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  if (!email||!pass) { showLerr('Email dan password wajib diisi'); return; }
+  const acc = getAcc().find(a=>a.email===email&&a.password===pass);
+  if (!acc) { showLerr('Email atau password salah'); return; }
+  setSes(acc); cu = acc;
+  enterApp();
+}
+
+function doRegister() {
+  const name  = document.getElementById('r-name').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const pass  = document.getElementById('r-pass').value;
+  if (!name||!email||!pass) { showLerr('Semua field wajib diisi'); return; }
+  if (pass.length < 8) { showLerr('Password minimal 8 karakter'); return; }
+  const accs = getAcc();
+  if (accs.find(a=>a.email===email)) { showLerr('Email sudah terdaftar'); return; }
+  const u = {
+    id: 'u_'+Date.now(), name, email, password: pass,
+    role: 'user',
+    joinDate: new Date().toISOString().split('T')[0],
+    allowedDevices: []
+  };
+  accs.push(u); savAcc(accs);
+  setSes(u); cu = u;
+  showToast('✅','Akun berhasil dibuat! Selamat datang, '+name);
+  enterApp();
+}
+
+function doLogout() {
+  setSes(null); cu = null;
+  document.getElementById('page-login').style.display='flex';
+  document.getElementById('page-login').classList.add('active');
+  document.getElementById('page-app').style.display='none';
+  document.getElementById('page-app').classList.remove('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  APP
+// ═══════════════════════════════════════════════════════════
+function enterApp() {
+  document.getElementById('page-login').style.display='none';
+  document.getElementById('page-login').classList.remove('active');
+  document.getElementById('page-app').style.display='flex';
+  document.getElementById('page-app').classList.add('active');
+
+  const rl = {superadmin:'Super Admin',admin:'Admin',user:'Pengguna'};
+  const ac = {superadmin:'av-super',admin:'av-admin',user:'av-user'};
+  document.getElementById('sb-name').textContent = cu.name;
+  document.getElementById('sb-role').textContent = rl[cu.role]||'Pengguna';
+  document.getElementById('sb-av').className = 'uavatar '+(ac[cu.role]||'av-user');
+  document.getElementById('sb-av').textContent = cu.name[0].toUpperCase();
+
+  const isSA = cu.role==='superadmin';
+  document.getElementById('sa-section').style.display  = isSA?'block':'none';
+  document.getElementById('nav-allacounts').style.display = isSA?'flex':'none';
+
+  // Isi IP gateway dari storage
+  if (GATEWAY_IP) document.getElementById('gw-ip').value = GATEWAY_IP;
+
+  render(); goView('dashboard');
+
+  // Mulai fetch gateway
+  fetchGateway();
+}
+
+function render() {
+  renderDashboard();
+  renderDevices();
+  renderUsers();
+  if (cu.role==='superadmin') renderAllAccounts();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  VIEWS
+// ═══════════════════════════════════════════════════════════
+const vtitles = {
+  dashboard:'Dashboard',detail:'Detail Alat',
+  devices:'Kelola Alat SPHC',users:'Kelola Akses',
+  allaccounts:'Semua Akun',gateway:'Status Gateway'
+};
+function goView(n) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  const v = document.getElementById('view-'+n);
+  if (v) v.classList.add('active');
+  const nb = document.getElementById('nav-'+n);
+  if (nb) nb.classList.add('active');
+  document.getElementById('main-title').textContent = vtitles[n]||n;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FETCH DATA DARI GATEWAY
+//  GET http://<GATEWAY_IP>/data
+//  Ini koneksi LANGSUNG ke ESP32 — tidak ada perantara
+// ═══════════════════════════════════════════════════════════
+async function fetchGateway() {
+  if (!GATEWAY_IP) {
+    updateConnBanner('warn','IP Gateway belum diatur — buka menu "Status Gateway" untuk mengisi IP');
+    return;
+  }
+
+  const url = `http://${GATEWAY_IP}/data`;
+  try {
+    const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+
+    gwOnline = true;
+    lastFetchTs = Date.now();
+
+    // Simpan data per node ke gwData cache
+    if (data.nodes && Array.isArray(data.nodes)) {
+      data.nodes.forEach(n => { gwData[n.id] = n; });
+    }
+
+    updateConnBanner('ok',
+      `Gateway online — Uptime: ${data.uptime||'—'} — ${Object.keys(gwData).length} node aktif — `+
+      `Update: ${new Date().toLocaleTimeString('id-ID')}`
+    );
+    document.getElementById('conn-status-mini').textContent =
+      '🟢 Gateway '+GATEWAY_IP+' online';
+
+    renderDashboard();
+    if (document.getElementById('view-detail').classList.contains('active') && detailId) {
+      renderDetail(detailId);
+    }
+
+    renderGwStatus(data);
+    renderGwNodes(data.nodes||[]);
+
+  } catch(e) {
+    gwOnline = false;
+    updateConnBanner('err',
+      `Gateway tidak terjangkau (${GATEWAY_IP}) — pastikan ESP32 menyala dan IP benar`
+    );
+    document.getElementById('conn-status-mini').textContent =
+      '🔴 Gateway offline';
+  }
+}
+
+function updateConnBanner(type, msg) {
+  const cls = {ok:'conn-ok',err:'conn-err',warn:'conn-warn'};
+  const ico = {ok:'✅',err:'❌',warn:'⚠️'};
+  document.getElementById('conn-banner').innerHTML =
+    `<div class="conn-banner ${cls[type]}">${ico[type]} ${msg}</div>`;
+}
+
+function simpanGwIp() {
+  const ip = document.getElementById('gw-ip').value.trim();
+  if (!ip) { showToast('⚠️','Masukkan IP Gateway terlebih dahulu'); return; }
+  GATEWAY_IP = ip;
+  localStorage.setItem('gw_ip', ip);
+  showToast('✅','IP Gateway disimpan: '+ip);
+  fetchGateway();
+}
+
+function renderGwStatus(data) {
+  const body = document.getElementById('gw-status-body');
+  body.innerHTML = `
+    <div class="d-row" style="border-bottom:1px solid var(--border)">
+      <span class="d-lb">Status</span>
+      <span class="badge b-online"><span class="dot dot-g"></span>Online</span>
+    </div>
+    <div class="d-row" style="border-bottom:1px solid var(--border);padding:8px 0">
+      <span class="d-lb">IP Gateway</span>
+      <span class="td-mono td-g">${GATEWAY_IP}</span>
+    </div>
+    <div class="d-row" style="border-bottom:1px solid var(--border);padding:8px 0">
+      <span class="d-lb">Uptime ESP32</span>
+      <span class="td-mono">${data.uptime||'—'}</span>
+    </div>
+    <div class="d-row" style="padding:8px 0">
+      <span class="d-lb">Total Node Aktif</span>
+      <span class="td-g td-mono">${(data.nodes||[]).length}</span>
+    </div>`;
+}
+
+function renderGwNodes(nodes) {
+  const card = document.getElementById('gw-nodes-card');
+  const tbody= document.getElementById('gw-nodes-tbody');
+  if (!nodes.length) { card.style.display='none'; return; }
+  card.style.display='block';
+  const pirStr = {0:'—',1:'PIR1',2:'PIR2',3:'Keduanya'};
+  tbody.innerHTML = nodes.map(n=>`
+    <tr>
+      <td class="td-mono td-g">${n.id}</td>
+      <td><span class="badge b-${n.mode||'IDLE'}">${n.mode||'IDLE'}</span></td>
+      <td class="${n.pir1?'td-y':''}">${n.pir1?'DETEKSI':'AMAN'}</td>
+      <td class="${n.pir2?'td-y':''}">${n.pir2?'DETEKSI':'AMAN'}</td>
+      <td class="td-mono">${n.v_panel??'—'} V</td>
+      <td class="td-mono td-g">${n.v_baterai??'—'} V</td>
+      <td class="td-mono">${n.pkt||'—'}</td>
+      <td>
+        <span class="badge ${n.online?'b-online':'b-offline'}">
+          <span class="dot ${n.online?'dot-g':'dot-r'}"></span>
+          ${n.online?'Online':'Offline'}
+        </span>
+      </td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════════
+let detailId = null;
+
+function renderDashboard() {
+  const devs = getDev();
+  const accs = getAcc();
+  const isSA = cu.role==='superadmin';
+  const isA  = cu.role==='admin';
+  const isU  = cu.role==='user';
+
+  // Stat cards
+  const onlineCnt = Object.values(gwData).filter(d=>d&&d.online).length;
+  const pendingCnt = accs.filter(a=>a.role==='user'&&!a.allowedDevices?.length).length;
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Total Alat</div>
+      <div class="stat-val" style="color:var(--green3)">${devs.length}</div>
+      <div class="stat-sub">SPHC terdaftar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Online</div>
+      <div class="stat-val" style="color:var(--teal)">${onlineCnt}</div>
+      <div class="stat-sub">Mengirim data aktif</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Pengguna</div>
+      <div class="stat-val" style="color:var(--amber)">${accs.length}</div>
+      <div class="stat-sub">Akun terdaftar</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Menunggu Izin</div>
+      <div class="stat-val" style="color:var(--purple)">${pendingCnt}</div>
+      <div class="stat-sub">Belum diizinkan</div>
+    </div>`;
+
+  document.getElementById('last-refresh').textContent =
+    lastFetchTs ? 'Update: '+new Date(lastFetchTs).toLocaleTimeString('id-ID') : '';
+
+  const grid = document.getElementById('device-grid');
+  if (!devs.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text3)">
+      <div style="font-size:36px;margin-bottom:10px">📡</div>
+      <p>Belum ada alat SPHC terdaftar</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = devs.map(dev => {
+    const gd    = gwData[dev.id] || {};
+    const online = gd.online || false;
+    const owner  = accs.find(a=>a.id===dev.ownerId);
+
+    // Cek hak akses penuh
+    const fullAccess = isSA
+      || (isA && dev.ownerId===cu.id)
+      || (isU && (cu.allowedDevices||[]).includes(dev.id));
+
+    if (!fullAccess) {
+      // TAMPILAN LUAR
+      return `<div class="d-card d-card-outer"
+        onclick="showAccessNotice('${dev.id}','${cu.role}')">
+        <div class="d-card-hdr">
+          <div>
+            <div class="d-id">${dev.id}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">${dev.name}</div>
+          </div>
+          <span class="badge ${online?'b-online':'b-offline'}">
+            <span class="dot ${online?'dot-g':'dot-r'}"></span>
+            ${online?'Online':'Offline'}
+          </span>
+        </div>
+        <div class="d-body">
+          <div class="d-row"><span class="d-lb">Pemilik</span><span class="d-vl">${owner?.name||'—'}</span></div>
+          <div class="d-row"><span class="d-lb">Akses Anda</span>
+            <span class="badge b-lock">🔒 Belum Diizinkan</span></div>
+        </div>
+        <div class="d-foot">
+          <span style="font-size:11px;color:var(--text3)">Hubungi Admin untuk akses</span>
+        </div>
+      </div>`;
+    }
+
+    // TAMPILAN PENUH
+    const pirStr = {0:'—',1:'PIR1',2:'PIR2',3:'Keduanya'};
+    return `<div class="d-card" onclick="openDetail('${dev.id}')">
+      <div class="d-card-hdr">
+        <div>
+          <div class="d-id">${dev.id}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${dev.name}</div>
+        </div>
+        <span class="badge ${online?'b-online':'b-offline'}">
+          <span class="dot ${online?'dot-g':'dot-r'}"></span>
+          ${online?'Online':'Offline'}
+        </span>
+      </div>
+      <div class="d-body">
+        <div class="d-row"><span class="d-lb">Mode</span>
+          <span class="badge b-${gd.mode||'STANDBY'}">${gd.mode||'STANDBY'}</span></div>
+        <div class="d-row"><span class="d-lb">PIR1 Depan-Belakang</span>
+          <span class="d-vl ${gd.pir1?'td-y':''}">${gd.pir1?'⚡ DETEKSI':'✓ AMAN'}</span></div>
+        <div class="d-row"><span class="d-lb">PIR2 Kanan-Kiri</span>
+          <span class="d-vl ${gd.pir2?'td-y':''}">${gd.pir2?'⚡ DETEKSI':'✓ AMAN'}</span></div>
+        <div class="d-row"><span class="d-lb">Sweep ke-</span>
+          <span class="d-vl">${gd.sweep_ke||0} / ${gd.mode==='TIKUS'?'4':'3'}</span></div>
+        <div class="d-row"><span class="d-lb">Panel Surya</span>
+          <span class="d-vl" style="color:var(--amber)">${gd.v_panel??'—'} V</span></div>
+        <div class="d-row"><span class="d-lb">Baterai</span>
+          <span class="d-vl" style="color:var(--green3)">${gd.v_baterai??'—'} V</span></div>
+      </div>
+      <div class="d-foot">
+        <span style="font-size:11px;color:var(--text3)">Pemilik: ${owner?.name||'—'}</span>
+        <span style="font-size:11px;color:var(--green3)">✓ Dapat Diakses</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showAccessNotice(id, role) {
+  if (role==='admin') showToast('🔒','Admin hanya bisa akses alat miliknya sendiri');
+  else showToast('🔒','Hubungi Admin untuk izin akses alat '+id);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DETAIL ALAT
+// ═══════════════════════════════════════════════════════════
+function openDetail(devId) {
+  const isSA = cu.role==='superadmin';
+  const isA  = cu.role==='admin';
+  const isU  = cu.role==='user';
+  const dev  = getDev().find(d=>d.id===devId);
+  if (!dev) return;
+
+  if (!isSA) {
+    if (isA && dev.ownerId !== cu.id) {
+      showToast('🚫','Admin hanya bisa membuka detail alat miliknya'); return;
+    }
+    if (isU && !(cu.allowedDevices||[]).includes(devId)) {
+      showToast('🔒','Anda belum diizinkan akses alat ini'); return;
+    }
+  }
+
+  detailId = devId;
+  renderDetail(devId);
+  goView('detail');
+}
+
+function renderDetail(devId) {
+  const dev   = getDev().find(d=>d.id===devId);
+  const gd    = gwData[devId] || {};
+  const owner = getAcc().find(a=>a.id===dev?.ownerId);
+  const online = gd.online||false;
+
+  document.getElementById('det-id').textContent    = devId;
+  document.getElementById('det-sub').textContent   = 'Alat: '+(dev?.name||'—')+' | Pemilik: '+(owner?.name||'—');
+  document.getElementById('det-badge').innerHTML   =
+    `<span class="badge ${online?'b-online':'b-offline'}">
+      <span class="dot ${online?'dot-g':'dot-r'}"></span>
+      ${online?'Online':'Offline'}</span>`;
+  document.getElementById('det-update').textContent = gd.waktu?'Data: '+gd.waktu:'';
+  document.getElementById('det-mode-badge').innerHTML =
+    `<span class="badge b-${gd.mode||'STANDBY'}">${gd.mode||'STANDBY'}</span>`;
+
+  // Monitor cards
+  document.getElementById('mon-grid').innerHTML = `
+    <div class="mon-card">
+      <div class="mc-ico">📡</div>
+      <div class="mc-lbl">Mode Aktif</div>
+      <div class="mc-val">
+        <span class="badge b-${gd.mode||'STANDBY'}" style="font-size:13px;padding:5px 12px">
+          ${gd.mode||'STANDBY'}
+        </span>
+      </div>
+    </div>
+    <div class="mon-card ${gd.pir1?'pir-active':''}">
+      <div class="mc-ico">👁</div>
+      <div class="mc-lbl">PIR1 Depan-Belakang</div>
+      <div class="mc-val ${gd.pir1?'pir-det':'pir-aman'}">${gd.pir1?'DETEKSI':'AMAN'}</div>
+    </div>
+    <div class="mon-card ${gd.pir2?'pir-active':''}">
+      <div class="mc-ico">👁</div>
+      <div class="mc-lbl">PIR2 Kanan-Kiri</div>
+      <div class="mc-val ${gd.pir2?'pir-det':'pir-aman'}">${gd.pir2?'DETEKSI':'AMAN'}</div>
+    </div>
+    <div class="mon-card">
+      <div class="mc-ico">☀️</div>
+      <div class="mc-lbl">Tegangan Panel</div>
+      <div class="mc-val" style="color:var(--amber)">${gd.v_panel??'—'}<span class="mc-unit">V</span></div>
+    </div>
+    <div class="mon-card">
+      <div class="mc-ico">⚡</div>
+      <div class="mc-lbl">Arus Panel</div>
+      <div class="mc-val" style="color:var(--amber)">${gd.i_panel??'—'}<span class="mc-unit">mA</span></div>
+    </div>
+    <div class="mon-card">
+      <div class="mc-ico">🔋</div>
+      <div class="mc-lbl">Tegangan Baterai</div>
+      <div class="mc-val" style="color:var(--green3)">${gd.v_baterai??'—'}<span class="mc-unit">V</span></div>
+    </div>
+    <div class="mon-card">
+      <div class="mc-ico">🔌</div>
+      <div class="mc-lbl">Arus Baterai</div>
+      <div class="mc-val" style="color:var(--green3)">${gd.i_baterai??'—'}<span class="mc-unit">mA</span></div>
+    </div>
+    <div class="mon-card">
+      <div class="mc-ico">📦</div>
+      <div class="mc-lbl">No. Paket</div>
+      <div class="mc-val" style="color:var(--teal)">${gd.pkt||'—'}</div>
+    </div>`;
+
+  // Tabel burung (PIR)
+  const ptStr = {0:'Tidak ada',1:'PIR1 (Depan/Blkg)',2:'PIR2 (Kanan/Kiri)',3:'PIR1 + PIR2'};
+  document.getElementById('tbl-burung').innerHTML = `
+    <tr>
+      <td>PIR1 — Depan & Belakang</td>
+      <td class="td-mono ${gd.pir1?'td-y':''}">${gd.pir1?'1':'0'}</td>
+      <td><span class="badge ${gd.pir1?'b-BURUNG':'b-STANDBY'}">${gd.pir1?'DETEKSI':'AMAN'}</span></td>
+    </tr>
+    <tr>
+      <td>PIR2 — Kanan & Kiri</td>
+      <td class="td-mono ${gd.pir2?'td-y':''}">${gd.pir2?'1':'0'}</td>
+      <td><span class="badge ${gd.pir2?'b-BURUNG':'b-STANDBY'}">${gd.pir2?'DETEKSI':'AMAN'}</span></td>
+    </tr>
+    <tr>
+      <td>Sumber Trigger</td>
+      <td class="td-mono">${gd.pir_trigger??0}</td>
+      <td>${ptStr[gd.pir_trigger??0]||'—'}</td>
+    </tr>
+    <tr>
+      <td>Sweep Burung ke-</td>
+      <td class="td-mono">${gd.sweep_ke??0}</td>
+      <td>${gd.mode==='BURUNG'?'dari 3 sweep/deteksi':'Tidak aktif'}</td>
+    </tr>
+    <tr>
+      <td>Rentang Frekuensi Burung</td>
+      <td class="td-mono">20–30 kHz</td>
+      <td>Acak tiap sweep</td>
+    </tr>`;
+
+  // Tabel tikus (jadwal)
+  const sweepJam = [
+    {no:1, jam:'Mulai sesi (04:00 / 18:00)'},
+    {no:2, jam:'+30 menit'},
+    {no:3, jam:'+60 menit'},
+    {no:4, jam:'+90 menit'},
+  ];
+  const swCurr = gd.sweep_ke||0;
+  document.getElementById('tbl-tikus').innerHTML = sweepJam.map(s=>`
+    <tr>
+      <td>Sweep ke-${s.no}</td>
+      <td class="td-mono" style="color:${s.no===swCurr?'var(--amber)':'inherit'}">${s.no===swCurr?'▶ Aktif':'—'}</td>
+      <td>${s.jam}${s.no===swCurr?' ← sekarang':''}</td>
+    </tr>`).join('') + `
+    <tr>
+      <td>Jadwal Aktif</td>
+      <td class="td-mono">04:00–06:00</td>
+      <td>& 18:00–20:00</td>
+    </tr>
+    <tr>
+      <td>Rentang Frekuensi</td>
+      <td class="td-mono">60–100 kHz</td>
+      <td>Acak tiap sweep</td>
+    </tr>`;
+
+  // Tabel info
+  document.getElementById('tbl-info').innerHTML = `
+    <tr><td class="d-lb">ID Alat</td>
+        <td class="td-mono td-g">${devId}</td></tr>
+    <tr><td class="d-lb">Nama Alat</td><td>${dev?.name||'—'}</td></tr>
+    <tr><td class="d-lb">Status</td>
+        <td><span class="badge ${online?'b-online':'b-offline'}">${online?'Online':'Offline'}</span></td></tr>
+    <tr><td class="d-lb">Waktu Data Terakhir</td>
+        <td class="td-mono">${gd.waktu||'—'}</td></tr>
+    <tr><td class="d-lb">Total Paket Diterima</td>
+        <td class="td-mono">${gd.pkt_total||'—'}</td></tr>
+    <tr><td class="d-lb">Terakhir Terima Data</td>
+        <td class="td-mono">${gd.last_seen!==undefined?(gd.last_seen+'s lalu'):'—'}</td></tr>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KELOLA ALAT
+// ═══════════════════════════════════════════════════════════
+let editDevId = null;
+
+function renderDevices() {
+  const devs = getDev();
+  const accs = getAcc();
+  const isSA = cu.role==='superadmin';
+  const list = isSA ? devs : devs.filter(d=>d.ownerId===cu.id);
+  const tb = document.getElementById('dev-tbody');
+  if (!list.length) {
+    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">
+      Belum ada alat terdaftar</td></tr>`;
+    return;
+  }
+  tb.innerHTML = list.map(dev=>{
+    const own = accs.find(a=>a.id===dev.ownerId);
+    return `<tr>
+      <td class="td-mono td-g">${dev.id}</td>
+      <td>${dev.name}</td>
+      <td>${own?.name||'—'}</td>
+      <td><span class="badge b-online"><span class="dot dot-g"></span>Aktif</span></td>
+      <td style="display:flex;gap:5px">
+        <button class="btn btn-sm btn-b" onclick="editDev('${dev.id}')">✏️</button>
+        <button class="btn btn-sm btn-r" onclick="deleteDev('${dev.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openMo(id) { document.getElementById(id).classList.add('open'); }
+function closeMo(id){ document.getElementById(id).classList.remove('open'); }
+
+function saveDev() {
+  const id   = document.getElementById('d-id').value.trim().toUpperCase();
+  const name = document.getElementById('d-name').value.trim();
+  if (!id||!name) { showToast('⚠️','ID Alat dan Nama wajib diisi'); return; }
+
+  const devs = getDev();
+  if (editDevId) {
+    const i = devs.findIndex(d=>d.id===editDevId);
+    if (i>=0) { devs[i]={...devs[i],name}; savDev(devs); showToast('✅','Alat diperbarui'); }
+    editDevId = null;
+  } else {
+    if (devs.find(d=>d.id===id)) { showToast('⚠️','ID alat sudah ada'); return; }
+    devs.push({id, name, ownerId:cu.id});
+    savDev(devs);
+
+    // Naik ke Admin hanya karena daftarkan alat sendiri
+    const accs = getAcc();
+    const ui   = accs.findIndex(a=>a.id===cu.id);
+    if (ui>=0 && accs[ui].role==='user') {
+      accs[ui].role = 'admin';
+      accs[ui].allowedDevices = [...(accs[ui].allowedDevices||[]),id];
+      savAcc(accs); cu=accs[ui]; setSes(cu);
+      document.getElementById('sb-role').textContent='Admin';
+      document.getElementById('sb-av').className='uavatar av-admin';
+    }
+    showToast('✅','Alat didaftarkan! Role Anda naik jadi Admin.');
+  }
+  closeMo('mo-dev');
+  render();
+}
+
+function editDev(id) {
+  const dev = getDev().find(d=>d.id===id);
+  if (!dev) return;
+  editDevId = id;
+  document.getElementById('mo-dev-title').textContent='Edit Alat SPHC';
+  document.getElementById('d-id').value=dev.id;
+  document.getElementById('d-id').disabled=true;
+  document.getElementById('d-name').value=dev.name;
+  openMo('mo-dev');
+}
+
+function deleteDev(id) {
+  document.getElementById('confirm-msg').textContent=`Hapus alat "${id}"?`;
+  document.getElementById('confirm-ok').onclick=()=>{
+    savDev(getDev().filter(d=>d.id!==id));
+    closeMo('mo-confirm');
+    showToast('🗑','Alat dihapus');
+    render();
+  };
+  openMo('mo-confirm');
+}
+
+// Reset modal saat tutup
+document.querySelector('#mo-dev .btn-ghost').onclick=()=>{
+  editDevId=null;
+  document.getElementById('d-id').disabled=false;
+  document.getElementById('mo-dev-title').textContent='Daftarkan Alat SPHC';
+  ['d-id','d-name'].forEach(i=>document.getElementById(i).value='');
+};
+
+// ═══════════════════════════════════════════════════════════
+//  KELOLA AKSES
+// ═══════════════════════════════════════════════════════════
+let grantUid = null;
+
+function renderUsers() {
+  const accs = getAcc().filter(a=>a.role!=='superadmin');
+  const devs = getDev();
+  const isSA = cu.role==='superadmin';
+  const isA  = cu.role==='admin';
+  const tb   = document.getElementById('usr-tbody');
+
+  if (!accs.length) {
+    tb.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:40px">
+      Belum ada pengguna</td></tr>`;
+    return;
+  }
+
+  tb.innerHTML = accs.map(a=>{
+    const devStr=(a.allowedDevices||[]).join(', ')||'—';
+    const canGrant = isSA || isA;
+    const canDel   = isSA || a.id===cu.id;
+    return `<tr>
+      <td>${a.name}</td>
+      <td style="color:var(--text2)">${a.email}</td>
+      <td><span class="badge b-${a.role}">${a.role==='admin'?'Admin':'Pengguna'}</span></td>
+      <td class="td-mono" style="font-size:11px;color:var(--teal)">${devStr}</td>
+      <td>
+        ${(a.allowedDevices||[]).length
+          ?'<span class="badge b-online">Aktif</span>'
+          :'<span class="badge b-pending">Menunggu</span>'}
+      </td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        ${canGrant&&a.id!==cu.id
+          ?`<button class="btn btn-sm btn-y" onclick="openGrant('${a.id}')">🔑 Izinkan</button>`:''}
+        ${canDel
+          ?`<button class="btn btn-sm btn-r" onclick="deleteUser('${a.id}','${a.name}')">🗑</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openGrant(uid) {
+  const acc  = getAcc().find(a=>a.id===uid);
+  const devs = getDev();
+  const isSA = cu.role==='superadmin';
+  const avail= isSA ? devs : devs.filter(d=>d.ownerId===cu.id);
+  grantUid   = uid;
+  document.getElementById('grant-name').textContent=acc?.name||'—';
+  document.getElementById('grant-list').innerHTML = avail.map(d=>`
+    <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;
+      background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);cursor:pointer">
+      <input type="checkbox" value="${d.id}"
+        ${(acc?.allowedDevices||[]).includes(d.id)?'checked':''}
+        style="width:16px;height:16px;accent-color:var(--green)">
+      <div>
+        <div class="td-mono td-g" style="font-size:13px">${d.id}</div>
+        <div style="font-size:11px;color:var(--text3)">${d.name}</div>
+      </div>
+    </label>`).join('')||'<p style="color:var(--text3);font-size:13px">Tidak ada alat tersedia</p>';
+  openMo('mo-grant');
+}
+
+function saveGrant() {
+  const sel  = Array.from(document.querySelectorAll('#grant-list input:checked')).map(c=>c.value);
+  const accs = getAcc();
+  const i    = accs.findIndex(a=>a.id===grantUid);
+  if (i<0) return;
+
+  accs[i].allowedDevices = sel;
+  // TIDAK naik ke admin — tetap sebagai user
+  savAcc(accs);
+  if (grantUid===cu.id) { cu=accs[i]; setSes(cu); }
+  closeMo('mo-grant');
+  showToast('✅',accs[i].name+' diizinkan akses '+sel.length+' alat');
+  renderUsers(); renderDashboard();
+}
+
+function deleteUser(uid, name) {
+  const isSA = cu.role==='superadmin';
+  if (!isSA && uid!==cu.id) { showToast('🚫','Tidak bisa hapus akun lain'); return; }
+  document.getElementById('confirm-msg').textContent=`Hapus akun "${name}"?`;
+  document.getElementById('confirm-ok').onclick=()=>{
+    savAcc(getAcc().filter(a=>a.id!==uid));
+    closeMo('mo-confirm');
+    showToast('🗑','Akun dihapus');
+    if (uid===cu.id) { doLogout(); return; }
+    renderUsers();
+    if (cu.role==='superadmin') renderAllAccounts();
+  };
+  openMo('mo-confirm');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SEMUA AKUN (Super Admin)
+// ═══════════════════════════════════════════════════════════
+function renderAllAccounts() {
+  const accs = getAcc();
+  const devs = getDev();
+  const tb   = document.getElementById('sa-tbody');
+  const rl   = {superadmin:'Super Admin',admin:'Admin',user:'Pengguna'};
+  tb.innerHTML = accs.map(a=>{
+    const owned=devs.filter(d=>d.ownerId===a.id).map(d=>d.id).join(', ')||'—';
+    const self =a.id===cu.id;
+    return `<tr>
+      <td>${a.name}${self?' <span style="color:var(--text3);font-size:10px">(Anda)</span>':''}</td>
+      <td style="color:var(--text2)">${a.email}</td>
+      <td><span class="badge b-${a.role}">${rl[a.role]||a.role}</span></td>
+      <td style="color:var(--text3)">${a.joinDate||'—'}</td>
+      <td class="td-mono" style="font-size:11px;color:var(--teal)">${owned}</td>
+      <td>
+        ${a.role!=='superadmin'
+          ?`<button class="btn btn-sm btn-r" onclick="deleteUser('${a.id}','${a.name}')">🗑</button>`
+          :'<span style="color:var(--text3);font-size:11px">—</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════════
+let tTimer = null;
+function showToast(ico, msg) {
+  document.getElementById('t-ico').textContent=ico;
+  document.getElementById('t-msg').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  if (tTimer) clearTimeout(tTimer);
+  tTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MODAL CLOSE ON OVERLAY CLICK
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.mo').forEach(o=>{
+  o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════════════════════════════
+//  AUTO REFRESH — Fetch gateway tiap 30 detik
+// ═══════════════════════════════════════════════════════════
+setInterval(()=>{
+  fetchGateway();
+}, 30000);
+
+// ═══════════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════════
+initStorage();
+
+const saved = getSes();
+if (saved) {
+  const fresh = getAcc().find(a=>a.id===saved.id);
+  cu = fresh||saved;
+  document.getElementById('page-login').style.display='none';
+  document.getElementById('page-login').classList.remove('active');
+  enterApp();
+}
+</script>
+</body>
+</html>
