@@ -748,6 +748,26 @@ tr:hover td{background:rgba(255,255,255,0.015)}
                 IP dilihat dari Serial Monitor Arduino IDE saat gateway pertama kali menyala
               </div>
             </div>
+            <!-- Proxy URL untuk GitHub Pages (HTTPS → HTTP ESP32) -->
+            <div class="fg" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+              <label class="fl" style="display:flex;align-items:center;gap:6px">
+                🔗 URL Proxy Cloudflare Worker
+                <span style="font-size:10px;background:var(--orange);color:#fff;padding:1px 6px;border-radius:4px">
+                  Wajib jika pakai GitHub Pages
+                </span>
+              </label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="proxy-url" class="fi"
+                  placeholder="https://riceshield-proxy.NAMA-KAMU.workers.dev"
+                  style="font-family:'JetBrains Mono',monospace;font-size:11px">
+                <button class="btn btn-g" onclick="simpanProxy()">Simpan</button>
+              </div>
+              <div style="font-size:11px;color:var(--text3);margin-top:6px;line-height:1.6">
+                GitHub Pages pakai HTTPS → browser blokir request HTTP ke ESP32.<br>
+                Cloudflare Worker bertindak sebagai perantara HTTPS→HTTP.<br>
+                <span style="color:var(--amber)">Panduan buat Worker: lihat file <code>cloudflare-worker.js</code> di repo.</span>
+              </div>
+            </div>
           </div>
         </div>
         <div id="gw-status-card" class="tw">
@@ -853,13 +873,13 @@ tr:hover td{background:rgba(255,255,255,0.015)}
 //  Tidak perlu backend, tidak perlu database terpisah
 // ═══════════════════════════════════════════════════════════
 let GATEWAY_IP  = localStorage.getItem('gw_ip') || '';
+let PROXY_URL   = localStorage.getItem('proxy_url') || '';  // Cloudflare Worker URL
 let gwData      = {};   // cache data dari gateway { nodeId: {...} }
 let gwOnline    = false;
 let lastFetchTs = 0;
 
 // ThingsBoard host (untuk link referensi saja)
-// const TB_HOST = 'https://thingsboard.cloud';
-const TB_HOST = '10.211.224.175';
+const TB_HOST = 'https://thingsboard.cloud';
 
 // ═══════════════════════════════════════════════════════════
 //  STORAGE HELPERS
@@ -977,6 +997,7 @@ function enterApp() {
 
   // Isi IP gateway dari storage
   if (GATEWAY_IP) document.getElementById('gw-ip').value = GATEWAY_IP;
+  if (PROXY_URL)  document.getElementById('proxy-url').value = PROXY_URL;
 
   render(); goView('dashboard');
 
@@ -1020,7 +1041,8 @@ async function fetchGateway() {
     return;
   }
 
-  const url = `http://${GATEWAY_IP}/data`;
+  //const url = `http://${GATEWAY_IP}/data`;
+  const url = `http://10.211.224.175/data`;
   try {
     const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
     if (!res.ok) throw new Error('HTTP '+res.status);
@@ -1064,6 +1086,15 @@ function updateConnBanner(type, msg) {
   const ico = {ok:'✅',err:'❌',warn:'⚠️'};
   document.getElementById('conn-banner').innerHTML =
     `<div class="conn-banner ${cls[type]}">${ico[type]} ${msg}</div>`;
+}
+
+function simpanProxy() {
+  const u = document.getElementById('proxy-url').value.trim();
+  PROXY_URL = u;
+  if (u) localStorage.setItem('proxy_url', u);
+  else localStorage.removeItem('proxy_url');
+  showToast('✅', u ? 'URL Proxy disimpan' : 'Proxy dihapus — koneksi langsung');
+  fetchGateway();
 }
 
 function simpanGwIp() {
